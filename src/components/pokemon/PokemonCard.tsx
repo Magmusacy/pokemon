@@ -1,6 +1,7 @@
 import { Image } from "expo-image";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Pokemon } from "../../types/pokemon.types";
+import { colors, fontSize } from "../../config/theme";
 
 export default function PokemonCard({
   pokemon,
@@ -36,10 +37,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-around",
     borderRadius: 8,
-    backgroundColor: "#FFEDC7",
+    backgroundColor: colors.surface,
     marginBottom: 8,
   },
-  pokemonName: { fontSize: 20, fontWeight: "bold", color: "#EB4C4C" },
+  pokemonName: {
+    fontSize: fontSize.lg,
+    fontWeight: "bold",
+    color: colors.text.primary,
+  },
   pokemonImage: {
     height: "80%",
     aspectRatio: 1,

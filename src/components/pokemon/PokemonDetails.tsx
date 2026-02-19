@@ -2,6 +2,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Pokemon } from "../../types/pokemon.types";
 import { useFavoritePokemon } from "../../contexts/FavoritePokemonContext";
 import { Image } from "expo-image";
+import { colors, fontSize } from "../../config/theme";
 
 export function PokemonDetails({ pokemon }: { pokemon: Pokemon }) {
   const { pokemon: favoritePokemon, changeFavoritePokemon } =
@@ -61,10 +62,14 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   addToFavoriteButtonColor: {
-    backgroundColor: "#fff",
+    backgroundColor: colors.favorite.add,
   },
   removeFromFavoriteButtonColor: {
-    backgroundColor: "#EB4C4C",
+    backgroundColor: colors.favorite.remove,
   },
-  pokemonName: { fontSize: 32, fontWeight: "bold", color: "#EB4C4C" },
+  pokemonName: {
+    fontSize: fontSize.lg,
+    fontWeight: "bold",
+    color: colors.text.primary,
+  },
 });

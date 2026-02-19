@@ -12,6 +12,7 @@ import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { PokemonDetails } from "../components/pokemon/PokemonDetails";
 import { BlurView } from "expo-blur";
+import { borderRadius, colors } from "../config/theme";
 
 const POKEMON_LIST_QUERY = `
 query getPokemonList($limit: Int, $offset: Int) {
@@ -27,7 +28,7 @@ query getPokemonList($limit: Int, $offset: Int) {
   }
 }`;
 
-// TODO: read up on ref vs state
+// TODO: read up on ref vs state, check if pagination works correctly
 export default function PokemonListScreen() {
   // move some of these things to some config later on.
   const LIMIT = 100;
@@ -120,8 +121,8 @@ export default function PokemonListScreen() {
             tint="light"
             style={{
               ...StyleSheet.absoluteFillObject,
-              borderTopLeftRadius: 20,
-              borderTopRightRadius: 20,
+              borderTopLeftRadius: borderRadius.lg,
+              borderTopRightRadius: borderRadius.lg,
               overflow: "hidden",
             }}
           />
@@ -138,7 +139,7 @@ export default function PokemonListScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: colors.background,
   },
   contentContainer: {
     padding: 8,
