@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { FlatList, Text, View } from "react-native";
+import { FlatList, StyleSheet, Text, View } from "react-native";
 import { Pokemon } from "../types/pokemon.types";
 import PokemonCard from "../components/pokemon/PokemonCard";
 
@@ -53,7 +53,6 @@ export default function PokemonListScreen() {
     setPokemonList((prev) => [...prev, ...pokemons]);
     isLoadingRef.current = false;
     offsetRef.current += LIMIT;
-    console.log("Fetched Pokemon List:", data.pokemons.length);
   };
 
   useEffect(() => {
@@ -61,18 +60,26 @@ export default function PokemonListScreen() {
   }, []);
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#fff" }}>
+    <View style={styles.container}>
       <FlatList
         data={pokemonList}
         keyExtractor={(item) => item.id.toString()}
-        numColumns={3}
         renderItem={({ item }) => <PokemonCard pokemon={item} />}
         onEndReached={() => {
           fetchPokemonList();
         }}
-        contentContainerStyle={{ padding: 8 }}
-        columnWrapperStyle={{ padding: 8, gap: 8 }}
+        contentContainerStyle={styles.contentContainer}
       />
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#fff",
+  },
+  contentContainer: {
+    padding: 8,
+  },
+});
