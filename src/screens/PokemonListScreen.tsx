@@ -32,10 +32,16 @@ export default function PokemonListScreen() {
   // move some of these things to some config later on.
   const LIMIT = 100;
   const [pokemonList, setPokemonList] = useState<Pokemon[]>([]);
-  const isLoadingRef = useRef(false);
+  const [isLoading, setIsLoading] = useState(false);
   const offsetRef = useRef(0);
   const bottomSheetRef = useRef<BottomSheet>(null);
   const [clickedPokemon, setClickedPokemon] = useState<Pokemon | null>(null);
+
+  const handleRefresh = async () => {
+    setPokemonList([]);
+    offsetRef.current = 0;
+    await fetchPokemonList();
+  };
 
   const handleClickedPokemon = (pokemon: Pokemon) => {
     setClickedPokemon(pokemon);
@@ -47,8 +53,8 @@ export default function PokemonListScreen() {
   }, []);
 
   const fetchPokemonList = async () => {
-    if (isLoadingRef.current) return;
-    isLoadingRef.current = true;
+    if (isLoading) return;
+    setIsLoading(true);
 
     const res = await fetch("https://graphql.pokeapi.co/v1beta2", {
       method: "POST",
@@ -74,7 +80,7 @@ export default function PokemonListScreen() {
           .front_default,
     }));
     setPokemonList((prev) => [...prev, ...pokemons]);
-    isLoadingRef.current = false;
+    setIsLoading(false);
     offsetRef.current += LIMIT;
   };
 
@@ -97,6 +103,8 @@ export default function PokemonListScreen() {
           onEndReached={() => {
             fetchPokemonList();
           }}
+          onRefresh={handleRefresh}
+          refreshing={isLoading}
           contentContainerStyle={styles.contentContainer}
         />
       </View>
@@ -108,7 +116,7 @@ export default function PokemonListScreen() {
         snapPoints={["5%", "50%", "75%"]}
         backgroundComponent={() => (
           <BlurView
-            intensity={80}
+            intensity={100}
             tint="light"
             style={{
               ...StyleSheet.absoluteFillObject,

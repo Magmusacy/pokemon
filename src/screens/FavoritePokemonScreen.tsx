@@ -3,7 +3,7 @@ import { useFavoritePokemon } from "../contexts/FavoritePokemonContext";
 import { PokemonDetails } from "../components/pokemon/PokemonDetails";
 
 export default function FavoritePokemonScreen() {
-  const { pokemon, changeFavoritePokemon } = useFavoritePokemon();
+  const { pokemon } = useFavoritePokemon();
 
   return (
     <View style={styles.container}>
