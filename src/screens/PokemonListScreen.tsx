@@ -1,7 +1,17 @@
-import { useEffect, useRef, useState } from "react";
-import { FlatList, StyleSheet, Text, View } from "react-native";
+import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  FlatList,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { Pokemon } from "../types/pokemon.types";
 import PokemonCard from "../components/pokemon/PokemonCard";
+import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { PokemonDetails } from "../components/pokemon/PokemonDetails";
+import { BlurView } from "expo-blur";
 
 const POKEMON_LIST_QUERY = `
 query getPokemonList($limit: Int, $offset: Int) {
@@ -17,11 +27,24 @@ query getPokemonList($limit: Int, $offset: Int) {
   }
 }`;
 
+// TODO: read up on ref vs state
 export default function PokemonListScreen() {
+  // move some of these things to some config later on.
   const LIMIT = 100;
   const [pokemonList, setPokemonList] = useState<Pokemon[]>([]);
   const isLoadingRef = useRef(false);
   const offsetRef = useRef(0);
+  const bottomSheetRef = useRef<BottomSheet>(null);
+  const [clickedPokemon, setClickedPokemon] = useState<Pokemon | null>(null);
+
+  const handleClickedPokemon = (pokemon: Pokemon) => {
+    setClickedPokemon(pokemon);
+    bottomSheetRef.current?.expand();
+  };
+
+  const handleSheetChanges = useCallback((index: number) => {
+    console.log("handleSheetChanges", index);
+  }, []);
 
   const fetchPokemonList = async () => {
     if (isLoadingRef.current) return;
@@ -60,17 +83,47 @@ export default function PokemonListScreen() {
   }, []);
 
   return (
-    <View style={styles.container}>
-      <FlatList
-        data={pokemonList}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => <PokemonCard pokemon={item} />}
-        onEndReached={() => {
-          fetchPokemonList();
-        }}
-        contentContainerStyle={styles.contentContainer}
-      />
-    </View>
+    <GestureHandlerRootView>
+      <View style={styles.container}>
+        <FlatList
+          data={pokemonList}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={({ item }) => (
+            <PokemonCard
+              pokemon={item}
+              handleClickedPokemon={handleClickedPokemon}
+            />
+          )}
+          onEndReached={() => {
+            fetchPokemonList();
+          }}
+          contentContainerStyle={styles.contentContainer}
+        />
+      </View>
+
+      <BottomSheet
+        index={-1}
+        ref={bottomSheetRef}
+        onChange={handleSheetChanges}
+        snapPoints={["5%", "50%", "75%"]}
+        backgroundComponent={() => (
+          <BlurView
+            intensity={80}
+            tint="light"
+            style={{
+              ...StyleSheet.absoluteFillObject,
+              borderTopLeftRadius: 20,
+              borderTopRightRadius: 20,
+              overflow: "hidden",
+            }}
+          />
+        )}
+      >
+        <BottomSheetView style={styles.contentContainer}>
+          {clickedPokemon ? <PokemonDetails pokemon={clickedPokemon} /> : null}
+        </BottomSheetView>
+      </BottomSheet>
+    </GestureHandlerRootView>
   );
 }
 
