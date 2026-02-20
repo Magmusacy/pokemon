@@ -32,8 +32,8 @@ export default function PokemonCard({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    height: 300,
-    flexDirection: "column",
+    height: 200,
+    flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-around",
     borderRadius: 8,
