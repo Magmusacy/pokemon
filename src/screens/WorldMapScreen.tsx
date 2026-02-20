@@ -1,6 +1,6 @@
 import { Platform, Text, View } from "react-native";
 import { AppleMaps, GoogleMaps } from "expo-maps";
-import IOSMap from "../components/IOSMap";
+import IOSMap from "../components/maps/IOSMap";
 
 export default function WorldMapScreen() {
   if (Platform.OS === "ios") {

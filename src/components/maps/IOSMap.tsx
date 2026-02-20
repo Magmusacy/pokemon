@@ -1,7 +1,7 @@
 import { AppleMaps } from "expo-maps";
-import { useFavoritePokemon } from "../contexts/FavoritePokemonContext";
+import { useFavoritePokemon } from "../../contexts/FavoritePokemonContext";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import PokemonBottomSheet from "./pokemon/PokemonBottomSheet";
+import PokemonBottomSheet from "../pokemon/PokemonBottomSheet";
 import { useRef } from "react";
 import BottomSheet from "@gorhom/bottom-sheet";
 

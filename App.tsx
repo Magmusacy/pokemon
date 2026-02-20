@@ -1,4 +1,5 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { createStackNavigator } from "@react-navigation/stack";
 import { createStaticNavigation } from "@react-navigation/native";
 import PokemonListScreen from "./src/screens/PokemonListScreen";
 import WorldMapScreen from "./src/screens/WorldMapScreen";
@@ -6,6 +7,26 @@ import FavoritePokemonScreen from "./src/screens/FavoritePokemonScreen";
 import { FavoritePokemonProvider } from "./src/contexts/FavoritePokemonContext";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { colors } from "./src/config/theme";
+import PokemonCamera from "./src/components/camera/PokemonCamera";
+
+const FavoritePokemonCameraStack = createStackNavigator({
+  screens: {
+    FavoritePokemon: {
+      screen: FavoritePokemonScreen,
+      options: {
+        title: "Favorite Pokemon",
+        headerShown: false,
+      },
+    },
+    PokemonCamera: {
+      screen: PokemonCamera,
+      options: {
+        title: "Pokemon Camera",
+        headerTitle: "",
+      },
+    },
+  },
+});
 
 const MyTabs = createBottomTabNavigator({
   screenOptions: {
@@ -18,7 +39,7 @@ const MyTabs = createBottomTabNavigator({
   },
   screens: {
     FavoritePokemon: {
-      screen: FavoritePokemonScreen,
+      screen: FavoritePokemonCameraStack,
       options: {
         title: "Favorite Pokemon",
         tabBarIcon: ({ color, size }) => (

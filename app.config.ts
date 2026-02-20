@@ -19,6 +19,7 @@ export default {
       bundleIdentifier: "com.anonymous.pokemon",
     },
     android: {
+      package: "com.anonymous.pokemon",
       adaptiveIcon: {
         foregroundImage: "./assets/adaptive-icon.png",
         backgroundColor: "#ffffff",
@@ -41,6 +42,12 @@ export default {
         {
           requestLocalizationPermission: true,
           localizationPermission: "Allow $(PRODUCT_NAME) to use your location",
+        },
+      ],
+      [
+        "react-native-vision-camera",
+        {
+          cameraPermissionText: "$(PRODUCT_NAME) needs access to your Camera.",
         },
       ],
     ],
