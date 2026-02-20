@@ -1,19 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import {
-  FlatList,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { FlatList, StyleSheet, View } from "react-native";
 import { Pokemon } from "../types/pokemon.types";
 import PokemonCard from "../components/pokemon/PokemonCard";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { PokemonDetails } from "../components/pokemon/PokemonDetails";
-import { BlurView } from "expo-blur";
-import { borderRadius, colors } from "../config/theme";
+import { colors } from "../config/theme";
 import PokemonBottomSheet from "../components/pokemon/PokemonBottomSheet";
+
+// move some of these things to some config later on.
 
 const POKEMON_LIST_QUERY = `
 query getPokemonList($limit: Int, $offset: Int) {
@@ -29,15 +23,14 @@ query getPokemonList($limit: Int, $offset: Int) {
   }
 }`;
 
-// TODO: read up on ref vs state, check if pagination works correctly
 export default function PokemonListScreen() {
-  // move some of these things to some config later on.
   const LIMIT = 100;
   const [pokemonList, setPokemonList] = useState<Pokemon[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const offsetRef = useRef(0);
   const [clickedPokemon, setClickedPokemon] = useState<Pokemon | null>(null);
   const bottomSheetRef = useRef<BottomSheet>(null);
+  const isFetchingRef = useRef(false);
 
   const handleClickedPokemon = (pokemon: Pokemon) => {
     setClickedPokemon(pokemon);
@@ -45,13 +38,16 @@ export default function PokemonListScreen() {
   };
 
   const handleRefresh = async () => {
+    if (isLoading) return;
     setPokemonList([]);
     offsetRef.current = 0;
     await fetchPokemonList();
   };
 
-  const fetchPokemonList = async () => {
-    if (isLoading) return;
+  const fetchPokemonList = useCallback(async () => {
+    console.log(offsetRef.current);
+    if (isLoading || isFetchingRef.current) return;
+    isFetchingRef.current = true;
     setIsLoading(true);
 
     const res = await fetch("https://graphql.pokeapi.co/v1beta2", {
@@ -69,7 +65,6 @@ export default function PokemonListScreen() {
     });
 
     const { data } = await res.json();
-    // any?
     const pokemons = data.pokemons.map((pokemon: any) => ({
       id: pokemon.id,
       name: pokemon.name,
@@ -79,12 +74,13 @@ export default function PokemonListScreen() {
     }));
     setPokemonList((prev) => [...prev, ...pokemons]);
     setIsLoading(false);
+    isFetchingRef.current = false;
     offsetRef.current += LIMIT;
-  };
+  }, []);
 
   useEffect(() => {
     fetchPokemonList();
-  }, []);
+  }, [fetchPokemonList]);
 
   return (
     <GestureHandlerRootView>
@@ -101,6 +97,7 @@ export default function PokemonListScreen() {
           onEndReached={() => {
             fetchPokemonList();
           }}
+          onEndReachedThreshold={0.2}
           onRefresh={handleRefresh}
           refreshing={isLoading}
           contentContainerStyle={styles.contentContainer}
