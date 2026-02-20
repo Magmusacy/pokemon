@@ -1,7 +1,8 @@
 import { Image } from "expo-image";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Pokemon } from "../../types/pokemon.types";
-import { colors, fontSize } from "../../config/theme";
+import { borderRadius, colors, fontSize } from "../../config/theme";
+import { useState } from "react";
 
 export default function PokemonCard({
   pokemon,
@@ -10,6 +11,8 @@ export default function PokemonCard({
   pokemon: Pokemon;
   handleClickedPokemon: (pokemon: Pokemon) => void;
 }) {
+  const [imgError, setImgError] = useState(false);
+
   return (
     <TouchableOpacity
       style={styles.container}
@@ -18,10 +21,13 @@ export default function PokemonCard({
       <Text style={styles.pokemonName}>{pokemon.name.toUpperCase()}</Text>
       <Image
         style={styles.pokemonImage}
-        source={pokemon.imageUrl}
+        source={
+          imgError || !pokemon.imageUrl
+            ? require("../../../assets/pokeball.png")
+            : pokemon.imageUrl
+        }
         onError={() => {
-          console.log(`Failed to download image for pokemon: ${pokemon.name}`);
-          // TODO: add some fallback image here
+          setImgError(true);
         }}
         contentFit="contain"
       />
@@ -41,12 +47,13 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   pokemonName: {
-    fontSize: fontSize.lg,
+    fontSize: fontSize.md,
     fontWeight: "bold",
     color: colors.text.primary,
   },
   pokemonImage: {
-    height: "80%",
+    height: "70%",
     aspectRatio: 1,
+    borderRadius: borderRadius.md,
   },
 });
