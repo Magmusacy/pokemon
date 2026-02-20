@@ -1,14 +1,12 @@
 import { createContext, useContext, useState } from "react";
 import { Pokemon } from "../types/pokemon.types";
+import { Coordinates } from "expo-maps/build/shared.types";
 
 type FavoritePokemonContextType = {
   changeFavoritePokemon: (pokemon: Pokemon | null) => void;
   pokemon: Pokemon | null;
-  coordinates: { latitude: number; longitude: number } | null;
-  setFavoritePokemonCoordinates: (coordinates: {
-    latitude: number;
-    longitude: number;
-  }) => void;
+  coordinates: Coordinates | null;
+  setCoordinates: (coordinates: Coordinates | null) => void;
 };
 
 const FavoritePokemonContext = createContext<FavoritePokemonContextType | null>(
@@ -21,20 +19,10 @@ export function FavoritePokemonProvider({
   children: React.ReactNode;
 }) {
   const [pokemon, setPokemon] = useState<Pokemon | null>(null);
-  const [coordinates, setCoordinates] = useState<{
-    latitude: number;
-    longitude: number;
-  } | null>(null);
+  const [coordinates, setCoordinates] = useState<Coordinates | null>(null);
 
   const changeFavoritePokemon = (pokemon: Pokemon | null) => {
     setPokemon(pokemon);
-  };
-
-  const setFavoritePokemonCoordinates = (coordinates: {
-    latitude: number;
-    longitude: number;
-  }) => {
-    setCoordinates(coordinates);
   };
 
   return (
@@ -43,7 +31,7 @@ export function FavoritePokemonProvider({
         pokemon,
         changeFavoritePokemon,
         coordinates,
-        setFavoritePokemonCoordinates,
+        setCoordinates,
       }}
     >
       {children}

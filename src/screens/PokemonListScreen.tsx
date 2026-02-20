@@ -13,6 +13,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { PokemonDetails } from "../components/pokemon/PokemonDetails";
 import { BlurView } from "expo-blur";
 import { borderRadius, colors } from "../config/theme";
+import PokemonBottomSheet from "../components/pokemon/PokemonBottomSheet";
 
 const POKEMON_LIST_QUERY = `
 query getPokemonList($limit: Int, $offset: Int) {
@@ -35,23 +36,19 @@ export default function PokemonListScreen() {
   const [pokemonList, setPokemonList] = useState<Pokemon[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const offsetRef = useRef(0);
-  const bottomSheetRef = useRef<BottomSheet>(null);
   const [clickedPokemon, setClickedPokemon] = useState<Pokemon | null>(null);
-
-  const handleRefresh = async () => {
-    setPokemonList([]);
-    offsetRef.current = 0;
-    await fetchPokemonList();
-  };
+  const bottomSheetRef = useRef<BottomSheet>(null);
 
   const handleClickedPokemon = (pokemon: Pokemon) => {
     setClickedPokemon(pokemon);
     bottomSheetRef.current?.expand();
   };
 
-  const handleSheetChanges = useCallback((index: number) => {
-    console.log("handleSheetChanges", index);
-  }, []);
+  const handleRefresh = async () => {
+    setPokemonList([]);
+    offsetRef.current = 0;
+    await fetchPokemonList();
+  };
 
   const fetchPokemonList = async () => {
     if (isLoading) return;
@@ -110,28 +107,10 @@ export default function PokemonListScreen() {
         />
       </View>
 
-      <BottomSheet
-        index={-1}
-        ref={bottomSheetRef}
-        onChange={handleSheetChanges}
-        snapPoints={["5%", "50%", "75%"]}
-        backgroundComponent={() => (
-          <BlurView
-            intensity={100}
-            tint="light"
-            style={{
-              ...StyleSheet.absoluteFillObject,
-              borderTopLeftRadius: borderRadius.lg,
-              borderTopRightRadius: borderRadius.lg,
-              overflow: "hidden",
-            }}
-          />
-        )}
-      >
-        <BottomSheetView style={styles.contentContainer}>
-          {clickedPokemon ? <PokemonDetails pokemon={clickedPokemon} /> : null}
-        </BottomSheetView>
-      </BottomSheet>
+      <PokemonBottomSheet
+        bottomSheetRef={bottomSheetRef}
+        pokemon={clickedPokemon}
+      />
     </GestureHandlerRootView>
   );
 }

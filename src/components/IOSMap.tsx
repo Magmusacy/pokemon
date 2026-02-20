@@ -1,22 +1,37 @@
 import { AppleMaps } from "expo-maps";
-import { useState } from "react";
 import { useFavoritePokemon } from "../contexts/FavoritePokemonContext";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import PokemonBottomSheet from "./pokemon/PokemonBottomSheet";
+import { useRef } from "react";
+import BottomSheet from "@gorhom/bottom-sheet";
 
 export default function IOSMap() {
-  const { coordinates } = useFavoritePokemon();
-  const defaultCameraState = {
-    coordinates: coordinates ?? { latitude: 50.048738, longitude: 19.965669 },
-    zoom: 15,
-  };
+  const { coordinates, setCoordinates, pokemon } = useFavoritePokemon();
+  const bottomSheetRef = useRef<BottomSheet>(null);
 
   return (
-    <AppleMaps.View
-      style={{ flex: 1 }}
-      cameraPosition={defaultCameraState}
-      onMapLongPress={(e) => {
-        console.log("Long pressed at:", e.coordinates);
-      }}
-      markers={coordinates ? [{ coordinates }] : []}
-    />
+    <GestureHandlerRootView>
+      <AppleMaps.View
+        style={{ flex: 1 }}
+        onMapLongPress={(e) => {
+          if (!pokemon) return;
+          setCoordinates(e.coordinates);
+        }}
+        markers={
+          coordinates
+            ? [
+                {
+                  coordinates,
+                  tintColor: "white",
+                  title: "Favorite Pokemon Location",
+                },
+              ]
+            : []
+        }
+        onMarkerClick={() => bottomSheetRef.current?.expand()}
+      />
+
+      <PokemonBottomSheet bottomSheetRef={bottomSheetRef} pokemon={pokemon} />
+    </GestureHandlerRootView>
   );
 }
