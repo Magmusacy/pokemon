@@ -1,11 +1,11 @@
+import BottomSheet from "@gorhom/bottom-sheet";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { FlatList, StyleSheet, View } from "react-native";
-import { Pokemon } from "../types/pokemon.types";
-import PokemonCard from "../components/pokemon/PokemonCard";
-import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { colors } from "../config/theme";
 import PokemonBottomSheet from "../components/pokemon/PokemonBottomSheet";
+import PokemonCard from "../components/pokemon/PokemonCard";
+import { colors } from "../config/theme";
+import { Pokemon } from "../types/pokemon.types";
 
 // move some of these things to some config later on.
 

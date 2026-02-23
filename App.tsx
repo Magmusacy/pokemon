@@ -1,13 +1,13 @@
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { createStackNavigator } from "@react-navigation/stack";
 import { createStaticNavigation } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
+import PokemonCamera from "./src/components/camera/PokemonCamera";
+import { colors } from "./src/config/theme";
+import { FavoritePokemonProvider } from "./src/contexts/FavoritePokemonContext";
+import FavoritePokemonScreen from "./src/screens/FavoritePokemonScreen";
 import PokemonListScreen from "./src/screens/PokemonListScreen";
 import WorldMapScreen from "./src/screens/WorldMapScreen";
-import FavoritePokemonScreen from "./src/screens/FavoritePokemonScreen";
-import { FavoritePokemonProvider } from "./src/contexts/FavoritePokemonContext";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { colors } from "./src/config/theme";
-import PokemonCamera from "./src/components/camera/PokemonCamera";
 
 const FavoritePokemonCameraStack = createStackNavigator({
   screens: {
@@ -59,6 +59,7 @@ const MyTabs = createBottomTabNavigator({
     WorldMap: {
       screen: WorldMapScreen,
       options: {
+        headerShown: false,
         title: "World Map",
         tabBarIcon: ({ color, size }) => (
           <MaterialIcons name="map" size={size} color={color} />

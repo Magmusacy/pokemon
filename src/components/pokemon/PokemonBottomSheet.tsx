@@ -1,10 +1,10 @@
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
-import { useCallback, useRef, useState } from "react";
-import { Pokemon } from "../../types/pokemon.types";
 import { BlurView } from "expo-blur";
-import { borderRadius } from "../../config/theme";
-import { PokemonDetails } from "./PokemonDetails";
+import { useCallback } from "react";
 import { StyleSheet } from "react-native";
+import { borderRadius } from "../../config/theme";
+import { Pokemon } from "../../types/pokemon.types";
+import { PokemonDetails } from "./PokemonDetails";
 
 export default function PokemonBottomSheet({
   bottomSheetRef,
@@ -27,6 +27,7 @@ export default function PokemonBottomSheet({
         <BlurView
           intensity={100}
           tint="light"
+          experimentalBlurMethod="dimezisBlurView"
           style={{
             ...StyleSheet.absoluteFillObject,
             borderTopLeftRadius: borderRadius.lg,

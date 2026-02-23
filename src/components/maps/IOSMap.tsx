@@ -1,13 +1,18 @@
-import { AppleMaps } from "expo-maps";
-import { useFavoritePokemon } from "../../contexts/FavoritePokemonContext";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
-import PokemonBottomSheet from "../pokemon/PokemonBottomSheet";
-import { useRef } from "react";
 import BottomSheet from "@gorhom/bottom-sheet";
+import { useImage } from "expo-image";
+import { AppleMaps } from "expo-maps";
+import { useRef } from "react";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { useFavoritePokemon } from "../../contexts/FavoritePokemonContext";
+import PokemonBottomSheet from "../pokemon/PokemonBottomSheet";
 
 export default function IOSMap() {
   const { coordinates, setCoordinates, pokemon } = useFavoritePokemon();
   const bottomSheetRef = useRef<BottomSheet>(null);
+  const pokemonImage = useImage(
+    pokemon?.imageUrl || require("../../../assets/pokeball.png"),
+  );
+  console.log(coordinates);
 
   return (
     <GestureHandlerRootView>
@@ -17,18 +22,19 @@ export default function IOSMap() {
           if (!pokemon) return;
           setCoordinates(e.coordinates);
         }}
-        markers={
+        annotations={
           coordinates
             ? [
                 {
                   coordinates,
-                  tintColor: "white",
+                  textColor: "white",
                   title: "Favorite Pokemon Location",
+                  icon: pokemonImage ? pokemonImage : undefined,
                 },
               ]
             : []
         }
-        onMarkerClick={() => bottomSheetRef.current?.expand()}
+        onAnnotationClick={() => bottomSheetRef.current?.expand()}
       />
 
       <PokemonBottomSheet bottomSheetRef={bottomSheetRef} pokemon={pokemon} />

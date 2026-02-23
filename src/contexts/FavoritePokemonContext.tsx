@@ -23,6 +23,7 @@ export function FavoritePokemonProvider({
 
   const changeFavoritePokemon = (pokemon: Pokemon | null) => {
     setPokemon(pokemon);
+    setCoordinates(null);
   };
 
   return (
