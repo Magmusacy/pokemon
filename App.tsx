@@ -1,6 +1,9 @@
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { createStaticNavigation } from "@react-navigation/native";
+import {
+  createStaticNavigation,
+  getFocusedRouteNameFromRoute,
+} from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import PokemonCamera from "./src/components/camera/PokemonCamera";
 import { colors } from "./src/config/theme";
@@ -15,14 +18,13 @@ const FavoritePokemonCameraStack = createStackNavigator({
       screen: FavoritePokemonScreen,
       options: {
         title: "Favorite Pokemon",
-        headerShown: false,
       },
     },
     PokemonCamera: {
       screen: PokemonCamera,
       options: {
         title: "Pokemon Camera",
-        headerTitle: "",
+        headerTransparent: true,
       },
     },
   },
@@ -40,11 +42,18 @@ const MyTabs = createBottomTabNavigator({
   screens: {
     FavoritePokemon: {
       screen: FavoritePokemonCameraStack,
-      options: {
-        title: "Favorite Pokemon",
-        tabBarIcon: ({ color, size }) => (
-          <MaterialIcons name="favorite" size={size} color={color} />
-        ),
+      options: ({ route }) => {
+        return {
+          title: "Favorite Pokemon",
+          headerShown: false,
+          tabBarStyle:
+            getFocusedRouteNameFromRoute(route) === "PokemonCamera"
+              ? { display: "none" }
+              : undefined,
+          tabBarIcon: ({ color, size }) => (
+            <MaterialIcons name="favorite" size={size} color={color} />
+          ),
+        };
       },
     },
     PokemonList: {
