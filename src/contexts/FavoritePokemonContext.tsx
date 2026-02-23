@@ -1,12 +1,18 @@
-import { createContext, useContext, useState } from "react";
-import { Pokemon } from "../types/pokemon.types";
+import { useAsyncStorage } from "@react-native-async-storage/async-storage";
 import { Coordinates } from "expo-maps/build/shared.types";
+import { createContext, useContext, useEffect, useState } from "react";
+import { Pokemon } from "../types/pokemon.types";
 
 type FavoritePokemonContextType = {
   changeFavoritePokemon: (pokemon: Pokemon | null) => void;
   pokemon: Pokemon | null;
   coordinates: Coordinates | null;
   setCoordinates: (coordinates: Coordinates | null) => void;
+};
+
+type SerializedPokemonData = {
+  pokemon: Pokemon | null;
+  coordinates: Coordinates | null;
 };
 
 const FavoritePokemonContext = createContext<FavoritePokemonContextType | null>(
@@ -20,10 +26,44 @@ export function FavoritePokemonProvider({
 }) {
   const [pokemon, setPokemon] = useState<Pokemon | null>(null);
   const [coordinates, setCoordinates] = useState<Coordinates | null>(null);
+  const { getItem, setItem } = useAsyncStorage("asyncPokemonStorage");
+
+  const savePokemonDataOnDevice = async (
+    pokemonData: SerializedPokemonData,
+  ) => {
+    try {
+      await setItem(JSON.stringify(pokemonData));
+    } catch (error) {
+      console.error("Error saving favorite Pokemon to device:", error);
+    }
+  };
+
+  const loadPokemonDataFromDevice = async () => {
+    try {
+      const data = await getItem();
+      if (data) {
+        const parsedData: SerializedPokemonData = JSON.parse(data);
+        setPokemon(parsedData.pokemon);
+        setCoordinates(parsedData.coordinates);
+      }
+    } catch (error) {
+      console.error("Error loading favorite Pokemon from device:", error);
+    }
+  };
+
+  useEffect(() => {
+    loadPokemonDataFromDevice();
+  }, []);
 
   const changeFavoritePokemon = (pokemon: Pokemon | null) => {
     setPokemon(pokemon);
-    setCoordinates(null);
+    const newCoordinates = pokemon ? coordinates : null;
+    setCoordinates(newCoordinates);
+
+    savePokemonDataOnDevice({
+      pokemon,
+      coordinates: newCoordinates,
+    });
   };
 
   return (
