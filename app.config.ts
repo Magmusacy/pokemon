@@ -50,6 +50,17 @@ export default {
           cameraPermissionText: "$(PRODUCT_NAME) needs access to your Camera.",
         },
       ],
+      [
+        "expo-build-properties",
+        {
+          ios: {
+            deploymentTarget: "16.0",
+          },
+          android: {
+            minSdkVersion: 35,
+          },
+        },
+      ],
     ],
   },
 };

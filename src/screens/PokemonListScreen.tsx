@@ -40,7 +40,7 @@ export default function PokemonListScreen() {
   const handleRefresh = async () => {
     if (isLoading) return;
     setPokemonList([]);
-    offsetRef.current = 0;
+    offsetRef.current = 1300;
     await fetchPokemonList();
   };
 
