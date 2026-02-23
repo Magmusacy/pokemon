@@ -7,7 +7,7 @@ type FavoritePokemonContextType = {
   changeFavoritePokemon: (pokemon: Pokemon | null) => void;
   pokemon: Pokemon | null;
   coordinates: Coordinates | null;
-  setCoordinates: (coordinates: Coordinates | null) => void;
+  storeCoordinates: (coordinates: Coordinates | null) => void;
 };
 
 type SerializedPokemonData = {
@@ -66,13 +66,22 @@ export function FavoritePokemonProvider({
     });
   };
 
+  const storeCoordinates = (coordinates: Coordinates | null) => {
+    setCoordinates(coordinates);
+
+    savePokemonDataOnDevice({
+      pokemon,
+      coordinates,
+    });
+  };
+
   return (
     <FavoritePokemonContext.Provider
       value={{
         pokemon,
         changeFavoritePokemon,
         coordinates,
-        setCoordinates,
+        storeCoordinates,
       }}
     >
       {children}

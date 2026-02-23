@@ -7,12 +7,11 @@ import { useFavoritePokemon } from "../../contexts/FavoritePokemonContext";
 import PokemonBottomSheet from "../pokemon/PokemonBottomSheet";
 
 export default function IOSMap() {
-  const { coordinates, setCoordinates, pokemon } = useFavoritePokemon();
+  const { coordinates, storeCoordinates, pokemon } = useFavoritePokemon();
   const bottomSheetRef = useRef<BottomSheet>(null);
   const pokemonImage = useImage(
     pokemon?.imageUrl || require("../../../assets/pokeball.png"),
   );
-  console.log(coordinates);
 
   return (
     <GestureHandlerRootView>
@@ -20,7 +19,7 @@ export default function IOSMap() {
         style={{ flex: 1 }}
         onMapLongPress={(e) => {
           if (!pokemon) return;
-          setCoordinates(e.coordinates);
+          storeCoordinates(e.coordinates);
         }}
         annotations={
           coordinates
