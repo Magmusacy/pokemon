@@ -1480,10 +1480,10 @@
     color "^4.2.3"
     use-latest-callback "^0.2.4"
 
-"@shopify/react-native-skia@*", "@shopify/react-native-skia@^2.2.12":
-  version "2.2.12"
-  resolved "https://registry.npmjs.org/@shopify/react-native-skia/-/react-native-skia-2.2.12.tgz"
-  integrity sha512-P5wZSMPTp00hM0do+awNFtb5aPh5hSpodMGwy7NaxK90AV+SmUu7wZe6NGevzQIwgFa89Epn6xK3j4jKWdQi+A==
+"@shopify/react-native-skia@*", "@shopify/react-native-skia@^2.4.21":
+  version "2.4.21"
+  resolved "https://registry.npmjs.org/@shopify/react-native-skia/-/react-native-skia-2.4.21.tgz"
+  integrity sha512-US1dIpHbnU63k1S1oOAJ1x4oyuQJ6XDHIAs1kXiDSA4g2jWdH7UPoUHvEllqip2MI2Oc2ZNLsip5Ftegz714oA==
   dependencies:
     canvaskit-wasm "0.40.0"
     react-reconciler "0.31.0"
