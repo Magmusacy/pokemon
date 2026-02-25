@@ -1,5 +1,5 @@
 import BottomSheet from "@gorhom/bottom-sheet";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FlatList, StyleSheet, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import PokemonBottomSheet from "../components/pokemon/PokemonBottomSheet";
@@ -44,7 +44,7 @@ export default function PokemonListScreen() {
     await fetchPokemonList();
   };
 
-  const fetchPokemonList = useCallback(async () => {
+  const fetchPokemonList = async () => {
     console.log(offsetRef.current);
     if (isLoading || isFetchingRef.current) return;
     isFetchingRef.current = true;
@@ -76,7 +76,7 @@ export default function PokemonListScreen() {
     setIsLoading(false);
     isFetchingRef.current = false;
     offsetRef.current += LIMIT;
-  }, []);
+  };
 
   useEffect(() => {
     fetchPokemonList();
