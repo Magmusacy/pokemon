@@ -6,7 +6,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useFavoritePokemon } from "../../contexts/FavoritePokemonContext";
 import PokemonBottomSheet from "../pokemon/PokemonBottomSheet";
 
-export default function Map() {
+export function Map() {
   const { coordinates, storeCoordinates, pokemon } = useFavoritePokemon();
   const bottomSheetRef = useRef<BottomSheet>(null);
   const pokemonImage = useImage(

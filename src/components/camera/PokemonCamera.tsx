@@ -156,7 +156,7 @@ export default function PokemonCamera() {
       {!!device ? (
         <>
           <Camera
-            style={StyleSheet.absoluteFill}
+            style={{ flex: 1 }}
             device={device}
             isActive={true}
             frameProcessor={frameProcessor}
