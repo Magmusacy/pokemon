@@ -1,6 +1,12 @@
 import { Image } from "expo-image";
-import { useEffect, useRef } from "react";
-import { StyleSheet, Text, useWindowDimensions, View } from "react-native";
+import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  Pressable,
+  StyleSheet,
+  Text,
+  useWindowDimensions,
+  View,
+} from "react-native";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -8,7 +14,6 @@ import Animated, {
 } from "react-native-reanimated";
 import {
   Camera,
-  runAsync,
   useCameraDevice,
   useCameraPermission,
   useFrameProcessor,
@@ -19,10 +24,11 @@ import {
   useFaceDetector,
 } from "react-native-vision-camera-face-detector";
 import { Worklets } from "react-native-worklets-core";
+import { borderRadius, colors } from "../../config/theme";
 import { useFavoritePokemon } from "../../contexts/FavoritePokemonContext";
 import { FittedText } from "../utils/FittedText";
+import { TakenPhoto } from "./TakenPhoto";
 
-// in the future maybe make it more restrictive about face tilt angles
 export default function PokemonCamera() {
   const { width, height } = useWindowDimensions();
   const { hasPermission, requestPermission } = useCameraPermission();
@@ -32,11 +38,9 @@ export default function PokemonCamera() {
     windowWidth: width,
     landmarkMode: "all",
   }).current;
-
-  const faceX = useSharedValue(0);
-  const faceY = useSharedValue(0);
-  const faceWidth = useSharedValue(0);
-  const faceHeight = useSharedValue(0);
+  const cameraRef = useRef<Camera | null>(null);
+  const [photoUri, setPhotoUri] = useState<string | null>(null);
+  const [showPreview, setShowPreview] = useState(false);
   const faceVisible = useSharedValue(false);
   const foreheadX = useSharedValue(0);
   const foreheadY = useSharedValue(0);
@@ -44,14 +48,8 @@ export default function PokemonCamera() {
   const foreheadHeight = useSharedValue(0);
   const foreheadRotation = useSharedValue(0);
   const { pokemon } = useFavoritePokemon();
-
   const device = useCameraDevice("front");
   const { detectFaces, stopListeners } = useFaceDetector(faceDetectionOptions);
-
-  if (!hasPermission)
-    return <FittedText>Camera permission not granted</FittedText>;
-  if (device == null)
-    return <FittedText>No camera device available</FittedText>;
 
   useEffect(() => {
     if (!hasPermission) {
@@ -74,72 +72,64 @@ export default function PokemonCamera() {
     }
   }, [device]);
 
-  const handleDetectedFaces = Worklets.createRunOnJS((faces: Face[]) => {
-    if (faces.length > 0) {
-      const face = faces[0];
-      // console.log(face.bounds);
-      const { bounds } = face;
-      console.log("rollAngle:", face.rollAngle);
-      console.log("bounds:", JSON.stringify(bounds));
-      faceX.value = bounds.x;
-      faceY.value = bounds.y;
-      faceWidth.value = Math.max(bounds.width, bounds.height);
-      faceHeight.value = Math.max(bounds.width, bounds.height);
-      faceVisible.value = true;
+  const takePhoto = async () => {
+    if (!cameraRef.current) return;
+    const photo = await cameraRef.current.takePhoto();
+    setPhotoUri(`file://${photo.path}`);
+    setShowPreview(true);
+  };
 
-      // Face center
-      const cx = bounds.x + bounds.width / 2;
-      const cy = bounds.y + bounds.height / 2;
+  const retakePhoto = () => {
+    setPhotoUri(null);
+    faceVisible.value = false;
+    setShowPreview(false);
+  };
 
-      // Distance from face center up to forehead
-      const faceSize = Math.max(bounds.width, bounds.height);
-      const d = faceSize * 0.35;
+  const handleDetectedFaces = Worklets.createRunOnJS(
+    useCallback((faces: Face[]) => {
+      if (faces.length > 0) {
+        const face = faces[0];
+        const { bounds } = face;
+        faceVisible.value = true;
 
-      // Rotate forehead offset by rollAngle around face center
-      const angleRad = (face.rollAngle * Math.PI) / 180;
-      // Forehead dimenions
-      const fhW = faceSize * 0.5;
-      const fhH = faceSize * 0.25;
+        // Face center
+        const cx = bounds.x + bounds.width / 2;
+        const cy = bounds.y + bounds.height / 2;
 
-      // Straight up offset (0, -d) rotated by rollAngle:
-      // newOffsetX = d * sin(angle), newOffsetY = -d * cos(angle)
-      const fhCenterX = cx + d * Math.sin(angleRad);
-      const fhCenterY = cy - d * Math.cos(angleRad);
+        // Distance from face center up to forehead
+        const faceSize = Math.max(bounds.width, bounds.height);
+        const d = faceSize * 0.35;
 
-      foreheadX.value = fhCenterX - fhW / 2;
-      foreheadY.value = fhCenterY - fhH / 2;
-      foreheadWidth.value = fhW;
-      foreheadHeight.value = fhH;
-      foreheadRotation.value = withTiming(face.rollAngle, { duration: 100 });
-    } else {
-      faceVisible.value = false;
-    }
-  });
+        // Rotate forehead offset by rollAngle around face center
+        const angleRad = (face.rollAngle * Math.PI) / 180;
+        // Forehead dimenions
+        const fhW = faceSize * 0.5;
+        const fhH = faceSize * 0.25;
+
+        // Straight up offset (0, -d) rotated by rollAngle:
+        // newOffsetX = d * sin(angle), newOffsetY = -d * cos(angle)
+        const fhCenterX = cx + d * Math.sin(angleRad);
+        const fhCenterY = cy - d * Math.cos(angleRad);
+
+        foreheadX.value = fhCenterX - fhW / 2;
+        foreheadY.value = fhCenterY - fhH / 2;
+        foreheadWidth.value = fhW;
+        foreheadHeight.value = fhH;
+        foreheadRotation.value = withTiming(face.rollAngle, { duration: 100 });
+      } else {
+        faceVisible.value = false;
+      }
+    }, []),
+  );
 
   const frameProcessor = useFrameProcessor(
     (frame) => {
       "worklet";
-      runAsync(frame, () => {
-        "worklet";
-        const faces = detectFaces(frame);
-        handleDetectedFaces(faces);
-      });
+      const faces = detectFaces(frame);
+      handleDetectedFaces(faces);
     },
-    [handleDetectedFaces],
+    [handleDetectedFaces, detectFaces],
   );
-
-  // debug purposes
-  // const faceBoxStyle = useAnimatedStyle(() => ({
-  //   position: "absolute",
-  //   left: withTiming(faceX.value, { duration: 100 }),
-  //   top: withTiming(faceY.value, { duration: 100 }),
-  //   width: withTiming(faceWidth.value, { duration: 100 }),
-  //   height: withTiming(faceHeight.value, { duration: 100 }),
-
-  //   borderWidth: 2,
-  //   borderColor: "cyan",
-  //   opacity: faceVisible.value ? 1 : 0,
-  // }));
 
   const foreheadStyle = useAnimatedStyle(() => ({
     position: "absolute",
@@ -151,6 +141,30 @@ export default function PokemonCamera() {
     display: faceVisible.value ? "flex" : "none",
   }));
 
+  if (!hasPermission)
+    return <FittedText>Camera permission not granted</FittedText>;
+  if (device == null)
+    return <FittedText>No camera device available</FittedText>;
+
+  if (photoUri && showPreview) {
+    return (
+      <TakenPhoto
+        width={width}
+        height={height}
+        photoUri={photoUri}
+        pokemonImageUri={pokemon!.imageUrl}
+        retakePhoto={retakePhoto}
+        pokemonImageProps={{
+          foreheadRotation: foreheadRotation.value,
+          foreheadX: foreheadX.value,
+          foreheadY: foreheadY.value,
+          foreheadWidth: foreheadWidth.value,
+          foreheadHeight: foreheadHeight.value,
+        }}
+      />
+    );
+  }
+
   return (
     <View style={{ flex: 1 }}>
       {!!device ? (
@@ -160,8 +174,9 @@ export default function PokemonCamera() {
             device={device}
             isActive={true}
             frameProcessor={frameProcessor}
+            photo={true}
+            ref={cameraRef}
           />
-          {/* <Animated.View style={faceBoxStyle} /> debug purposes */}
           <Animated.View style={foreheadStyle}>
             <Image
               style={styles.pokemonImage}
@@ -174,6 +189,7 @@ export default function PokemonCamera() {
               contentFit="contain"
             />
           </Animated.View>
+          <Pressable style={styles.overlay} onPress={takePhoto}></Pressable>
         </>
       ) : (
         <Text>No Device</Text>
@@ -186,5 +202,15 @@ const styles = StyleSheet.create({
   pokemonImage: {
     width: "100%",
     height: "100%",
+  },
+  overlay: {
+    position: "absolute",
+    left: "50%",
+    transform: [{ translateX: -40 }],
+    bottom: "10%",
+    backgroundColor: colors.surface,
+    borderRadius: borderRadius.full,
+    width: 80,
+    height: 80,
   },
 });
