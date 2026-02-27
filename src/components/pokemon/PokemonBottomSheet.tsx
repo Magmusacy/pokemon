@@ -18,7 +18,7 @@ export default function PokemonBottomSheet({
 
   return (
     <BottomSheet
-      index={-1}
+      index={3}
       ref={bottomSheetRef}
       snapPoints={["5%", "50%", "75%"]}
       enablePanDownToClose={true}

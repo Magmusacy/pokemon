@@ -1,0 +1,9 @@
+{
+  "platforms": ["apple", "android", "web"],
+  "apple": {
+    "modules": ["ExpoPreventScreenshotsModule"]
+  },
+  "android": {
+    "modules": ["expo.modules.preventscreenshots.ExpoPreventScreenshotsModule"]
+  }
+}
