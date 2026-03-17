@@ -12,6 +12,10 @@ export default function PokemonBottomSheet({
   bottomSheetRef: React.RefObject<BottomSheet | null>;
   pokemon: Pokemon | null;
 }) {
+  if (!pokemon) {
+    return null;
+  }
+
   return (
     <BottomSheet
       index={-1}
@@ -28,7 +32,7 @@ export default function PokemonBottomSheet({
       )}
     >
       <BottomSheetView style={styles.contentContainer}>
-        {pokemon ? <PokemonDetails pokemon={pokemon} /> : null}
+        <PokemonDetails pokemon={pokemon} />
       </BottomSheetView>
     </BottomSheet>
   );

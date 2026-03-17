@@ -10,6 +10,7 @@ web-build/
 expo-env.d.ts
 my-expo-app/
 .env
+.vscode/
 
 # Native
 .kotlin/

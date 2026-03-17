@@ -15,9 +15,9 @@ type SerializedPokemonData = {
   coordinates: Coordinates | null;
 };
 
-const FavoritePokemonContext = createContext<FavoritePokemonContextType | null>(
-  null,
-);
+const FavoritePokemonContext = createContext<
+  FavoritePokemonContextType | undefined
+>(undefined);
 
 export function FavoritePokemonProvider({
   children,

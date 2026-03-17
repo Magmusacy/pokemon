@@ -1,8 +1,9 @@
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { Pokemon } from "../../types/pokemon.types";
-import { useFavoritePokemon } from "../../contexts/FavoritePokemonContext";
 import { Image } from "expo-image";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { colors, fontSize } from "../../config/theme";
+import { useFavoritePokemon } from "../../contexts/FavoritePokemonContext";
+import { Pokemon } from "../../types/pokemon.types";
+import { FittedText } from "../utils/FittedText";
 
 export function PokemonDetails({ pokemon }: { pokemon: Pokemon }) {
   const { pokemon: favoritePokemon, changeFavoritePokemon } =
@@ -18,7 +19,9 @@ export function PokemonDetails({ pokemon }: { pokemon: Pokemon }) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.pokemonName}>{pokemon.name.toUpperCase()}</Text>
+      <FittedText style={styles.pokemonName}>
+        {pokemon.name.toUpperCase()}
+      </FittedText>
       <Image
         style={styles.pokemonImage}
         source={pokemon.imageUrl}
@@ -36,11 +39,11 @@ export function PokemonDetails({ pokemon }: { pokemon: Pokemon }) {
         ]}
         onPress={handleAddingToFavorites}
       >
-        <Text>
+        <FittedText>
           {favoritePokemon?.id === pokemon.id
-            ? "Remove from Favorites"
-            : "Add to Favorites"}
-        </Text>
+            ? "Remove from favorites"
+            : "Add to favorites"}
+        </FittedText>
       </TouchableOpacity>
     </View>
   );

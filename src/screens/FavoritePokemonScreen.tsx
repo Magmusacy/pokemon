@@ -1,10 +1,10 @@
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { useFavoritePokemon } from "../contexts/FavoritePokemonContext";
-import { PokemonDetails } from "../components/pokemon/PokemonDetails";
 import Entypo from "@expo/vector-icons/Entypo";
-import { borderRadius, colors, fontSize } from "../config/theme";
 import { useNavigation } from "@react-navigation/native";
-import PokemonCamera from "../components/camera/PokemonCamera";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { PokemonDetails } from "../components/pokemon/PokemonDetails";
+import { FittedText } from "../components/utils/FittedText";
+import { borderRadius, colors, fontSize } from "../config/theme";
+import { useFavoritePokemon } from "../contexts/FavoritePokemonContext";
 
 export default function FavoritePokemonScreen() {
   const { pokemon } = useFavoritePokemon();
@@ -23,7 +23,7 @@ export default function FavoritePokemonScreen() {
           <PokemonDetails pokemon={pokemon} />
         </View>
       ) : (
-        <Text>No favorite Pokemon selected 😢</Text>
+        <FittedText>No favorite Pokemon selected 😢</FittedText>
       )}
     </View>
   );
